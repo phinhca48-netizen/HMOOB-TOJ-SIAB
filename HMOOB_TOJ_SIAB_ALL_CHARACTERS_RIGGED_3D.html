@@ -2045,6 +2045,28 @@ function buildHmongCharacter(materials, opts) {
         add(body, track(new THREE.CylinderGeometry(0.0022, 0.0022, len, 4)), silver, px, topY - len / 2, 0.16, false);
         add(body, track(new THREE.BoxGeometry(0.022, 0.032, 0.006)), silver, px, topY - len - 0.016, 0.162, false);
     });
+    // Player-only heirloom silver flower pendant: attached to the torso bone,
+    // so it follows the existing walk/run/idle rig without changing gameplay.
+    if (girl && pl) {
+        const pendantY = 1.105;
+        add(body, track(new THREE.TorusGeometry(0.032, 0.0045, 8, 32)), silver, 0, pendantY, 0.166, false);
+        add(body, track(new THREE.TorusGeometry(0.020, 0.0028, 7, 28)), silver, 0, pendantY, 0.169, false);
+        for (let i = 0; i < 8; i++) {
+            const a = (i / 8) * Math.PI * 2;
+            const petal = add(body, track(new THREE.SphereGeometry(0.0065, 10, 8)), silver,
+                Math.sin(a) * 0.024, pendantY + Math.cos(a) * 0.024, 0.171, false);
+            petal.scale.set(0.82, 1.25, 0.55);
+        }
+        const ruby = mat('player-pendant-ruby', () => new THREE.MeshStandardMaterial({
+            color: 0x9e2634, roughness: 0.3, metalness: 0.12,
+        }));
+        add(body, track(new THREE.OctahedronGeometry(0.011, 0)), ruby, 0, pendantY, 0.178, false);
+        // Three tiny silver drops finish the lower edge of the pendant.
+        [-1, 0, 1].forEach((n) => {
+            add(body, track(new THREE.SphereGeometry(0.0045, 8, 6)), silver,
+                n * 0.014, pendantY - 0.043 - (n === 0 ? 0.008 : 0), 0.17, false);
+        });
+    }
     // ---- arms ----
     const makeArm = (sx) => {
         const g = new THREE.Bone();
