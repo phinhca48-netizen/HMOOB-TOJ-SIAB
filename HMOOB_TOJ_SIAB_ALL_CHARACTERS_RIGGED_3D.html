@@ -2025,6 +2025,32 @@ function buildHmongCharacter(materials, opts) {
             // pocket patch with embroidered frame
             add(body, track(new THREE.BoxGeometry(0.085, 0.075, 0.012)), trim(1), s * 0.105, 0.96, 0.125, false);
         });
+        // Player-only hand-embroidered silver-and-brass chest motifs.
+        // Curves sit just above the jacket surface and mirror each other.
+        if (pl) {
+            const embroidery = mat('player-jacket-embroidery', () => new THREE.MeshStandardMaterial({
+                color: 0xc5a46a, roughness: 0.58, metalness: 0.28,
+            }));
+            [-1, 1].forEach((side) => {
+                const points = [
+                    [side * 0.115, 1.285, 0.128],
+                    [side * 0.082, 1.265, 0.137],
+                    [side * 0.064, 1.225, 0.14],
+                    [side * 0.09, 1.19, 0.139],
+                    [side * 0.12, 1.205, 0.128],
+                ].map(([x, y, z]) => new THREE.Vector3(x, y, z));
+                const vine = new THREE.CatmullRomCurve3(points);
+                add(body, track(new THREE.TubeGeometry(vine, 24, 0.0028, 5, false)), embroidery, 0, 0, 0, false);
+                [[0.079, 1.25], [0.073, 1.215], [0.105, 1.205]].forEach(([x, y], i) => {
+                    const leaf = add(body, track(new THREE.SphereGeometry(0.006, 8, 6)), embroidery,
+                        side * x, y, 0.143, false);
+                    leaf.scale.set(0.55, 1.7, 0.42);
+                    leaf.rotation.z = side * (i - 1) * 0.48;
+                });
+                add(body, track(new THREE.SphereGeometry(0.008, 10, 8)), silver,
+                    side * 0.064, 1.225, 0.146, false);
+            });
+        }
         // toggle buttons
         for (let i = 0; i < 4; i++) {
             add(body, track(new THREE.SphereGeometry(0.008, 8, 6)), silver, 0, 1.28 - i * 0.1, 0.138, false);
